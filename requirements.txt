@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+twilio
+pandas
+openpyxl
+beautifulsoup4
+selenium
+loguru
+python-dotenv
+requests
