@@ -1,178 +1,126 @@
-# 🤖 Chatbot IA – Solución Multiplataforma WhatsApp
+# UNIBOT.
 
-![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
-![FastAPI](https://img.shields.io/badge/FastAPI-ASGI%20Framework-009688?logo=fastapi)
-![Twilio](https://img.shields.io/badge/Twilio-WhatsApp_API-F22F46?logo=twilio)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+Bienvenido a UNIBOT, un asistente conversacional inteligente diseñado para la Universitaria Tecnológica de Bolívar (UNITECNAR). Este proyecto utiliza un modelo de lenguaje local y una arquitectura de Generación Aumentada por Recuperación (RAG) para responder preguntas basadas en el contenido extraído del sitio web oficial de la universidad.
 
-> **Propósito**  
-> Desarrollar dos chatbots basados en IA que operen mediante WhatsApp:  
-> 1. **Universidad (Colombia):** Asistencia académica, envío de imágenes, canalización a un agente humano.  
-> 2. **Hotel:** Recepción de mensajes y audios, gestión de reservas, visualización de habitaciones disponibles.
+## Características Principales
 
----
-
-## 📑 Tabla de contenido
-1. [Descripción del proyecto](#descripción-del-proyecto)
-2. [Arquitectura](#arquitectura)
-3. [Tecnologías](#tecnologías)
-4. [Características principales](#características-principales)
-5. [Instalación](#instalación)
-6. [Estructura del proyecto](#estructura-del-proyecto)
-7. [Guía de uso rápido](#guía-de-uso-rápido)
-8. [Cumplimiento legal](#cumplimiento-legal)
-9. [Contribuciones](#contribuciones)
-10. [Licencia](#licencia)
-11. [Contacto](#contacto)
-
----
-
-## Descripción del proyecto
-Este repositorio alberga el código y la documentación de **dos** chatbots que comparten la misma base tecnológica. Ambos se comunican mediante **WhatsApp** gracias a la API de **Twilio**, y aprovechan modelos de lenguaje alojados localmente en **Ollama** con **Llama&nbsp;2** como motor principal.  
-Cada instancia expone un conjunto de endpoints **REST** a través de **FastAPI**, permitiendo la integración con sistemas externos y la orquestación de flujos conversacionales específicos.
-
----
-
-## Arquitectura
-```text
-┌──────────────────┐   Webhook   ┌──────────────────────┐
-│      Usuario     │◀──────────▶│       Twilio         │
-└──────────────────┘             └────────┬─────────────┘
-                                          │
-                              HTTP(S)     ▼
-                                ┌──────────────────────┐
-                                │     FastAPI App      │
-                                │  (Uvicorn ASGI)      │
-                                └────────┬─────────────┘
-                                   Async │ Calls
-                                          ▼
-                                ┌──────────────────────┐
-                                │    IA Service        │
-                                │  Ollama + Llama 2    │
-                                └────────┬─────────────┘
-                                   I/O   │
-                                          ▼
-                                ┌──────────────────────┐
-                                │  DB / External APIs  │
-                                └──────────────────────┘
-```
-*Los dos chatbots comparten la misma infraestructura; difieren únicamente en la capa de lógica de negocio.*
-
----
+* **Inteligencia Local:** Todo el procesamiento de IA se realiza localmente utilizando **Ollama**, garantizando la privacidad de los datos y sin depender de APIs de terceros.
+* **Generación Aumentada por Recuperación (RAG):** El chatbot no inventa respuestas. Utiliza información extraída del sitio web de Unitecnar, almacenada en una base de datos vectorial, para formular respuestas precisas y contextualizadas.
+* **Extracción de Datos Automatizada:** Incluye un crawler avanzado basado en **Selenium** y **BeautifulSoup** capaz de navegar por el sitio web y extraer su contenido textual de forma automática.
+* **Interfaz de Prueba:** Una interfaz web sencilla con estilo de WhatsApp para probar e interactuar con el chatbot en un entorno local.
+* **Backend Moderno:** Construido con **FastAPI**, asegurando un alto rendimiento y una API robusta.
 
 ## Tecnologías
 | Categoría | Herramienta | Descripción breve |
-|-----------|-------------|-------------------|
-|🧠 IA|**Ollama**|Hosting local de modelos de lenguaje|
-| |**Llama 2**|Modelo de lenguaje base|
-|🐍 Backend|**Python 3.11**|Lenguaje principal|
-| |**FastAPI**|Framework web REST|
-| |**Uvicorn**|Servidor ASGI eficiente|
-|💬 WhatsApp|**Twilio**|Envío/recepción de mensajes y audios|
-|🧰 Dev Tools|**Git**|Control de versiones|
-| |**VS Code**|Editor de código|
-| |**python-dotenv**|Gestión de variables de entorno|
-| |**loguru**|Logging estructurado|
-|🌐 Scraping|**requests**|HTTP client|
-| |**BeautifulSoup4**|Parseo HTML|
-| |**selenium**|Automatización navegador|
-|📊 Datos|**pandas**|Manipulación de datos|
-| |**openpyxl**|Excel I/O|
-|⚖️ Legal|**Ley 1581 de 2012**|Protección de datos personales (Colombia)|
+|:---:|:---|:---|
+| 🧠 **IA y Modelos** | **Ollama** | Plataforma para ejecutar modelos de lenguaje grandes (LLMs) de forma local. |
+| | **Llama 2 (7B)** | Modelo de lenguaje principal para generar las respuestas del chatbot. |
+| | **mxbai-embed-large** | Modelo de embeddings para vectorizar el texto y permitir búsquedas semánticas. |
+| 🐍 **Backend** | **Python 3.11** | Lenguaje de programación principal del proyecto. |
+| | **FastAPI** | Framework web asíncrono para construir la API del chatbot. |
+| | **Uvicorn** | Servidor ASGI para ejecutar la aplicación FastAPI. |
+| 🗃️ **Base de Datos** | **ChromaDB** | Base de datos vectorial para almacenar y consultar los embeddings del conocimiento. |
+| 🌐 **Scraping Web** | **Selenium** | Herramienta para automatizar y controlar un navegador web real. |
+| | **Selenium-Stealth** | Plugin para Selenium que evade sistemas avanzados de detección de bots. |
+| | **BeautifulSoup4** | Librería para parsear HTML y extraer contenido de las páginas web. |
+| 💬 **Integración** | **Twilio** | API para la futura integración del chatbot con WhatsApp. |
+| 🧰 **Herramientas**| **Git** | Sistema de control de versiones para gestionar el código fuente. |
+| | **VS Code** | Editor de código principal para el desarrollo. |
+| | **python-dotenv** | Librería para gestionar variables de entorno y secretos. |
+| ⚖️ **Marco Legal** | **Ley 1581 de 2012** | Normativa colombiana de protección de datos a considerar en el manejo de información. |
 
 ---
 
-## Características principales
-- **Flujos conversacionales definidos** mediante intents y contexto.
-- **Derivación a agente humano** cuando se requiere atención especializada.
-- **Envío y recepción de multimedia** (imágenes y audios).
-- **Persistencia de conversaciones** y registros operativos.
-- **Despliegue simple** en entornos *bare‑metal* o *cloud*.
+## 🚀 Puesta en Marcha
 
----
+Sigue estos pasos para configurar y ejecutar el proyecto en tu máquina local después de clonar el repositorio.
 
-## Instalación
-```bash
-# 1. Clonar repositorio
-git clone https://github.com/tu_usuario/chatbot-ia-whatsapp.git
-cd chatbot-ia-whatsapp
+### Prerrequisitos
 
-# 2. Crear entorno virtual
-python -m venv venv
-source venv/bin/activate  # En Windows: venv\Scripts\activate
+Asegúrate de tener instalado lo siguiente:
 
-# 3. Instalar dependencias
-pip install -r requirements.txt
+* **Python 3.11** o superior.
+* **Git**.
+* **Google Chrome** (para que Selenium funcione correctamente).
+* **Ollama:** Descárgalo e instálalo desde [ollama.com](https://ollama.com).
 
-# 4. Definir variables de entorno
-cp .env.example .env
-# Editar .env con credenciales Twilio, claves API, etc.
+### 🔧 Instalación
 
-# 5. Lanzar servidor
-uvicorn app.main:app --reload
-```
+1.  **Clona el repositorio:**
+    ```bash
+    git clone <URL-de-tu-repositorio>
+    cd UNIBOT-Chatbot
+    ```
 
----
+2.  **Crea y activa un entorno virtual:**
+    ```bash
+    # Crear el entorno
+    python -m venv venv
 
-## Estructura del proyecto
+    # Activar en Windows
+    .\venv\Scripts\activate
+
+    # Activar en macOS/Linux
+    # source venv/bin/activate
+    ```
+
+3.  **Instala las dependencias de Python:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Descarga los modelos de Ollama:**
+    Abre una nueva terminal y ejecuta estos comandos. Ollama debe estar corriendo en segundo plano.
+    ```bash
+    # Descargar el modelo de chat (4.7 GB)
+    ollama pull llama3:8b-instruct
+
+    # Descargar el modelo para la base de datos (400 MB)
+    ollama pull mxbai-embed-large
+    ```
+
+### 🧠 Creación de la Base de Conocimiento
+
+Este paso utiliza el crawler para extraer la información de la web y la guarda en la base de datos vectorial.
+
+1.  **Ejecuta el script de scraping:**
+    Este proceso tardará varios minutos, ya que navegará por todo el sitio web.
+    ```bash
+    python scripts/scrape_unitecnar.py
+    ```
+
+2.  **Ejecuta el script de creación de la base de datos:**
+    Este proceso también tardará varios minutos mientras procesa todo el texto extraído.
+    ```bash
+    python scripts/create_database.py
+    ```
+
+### ▶️ Ejecución del Chatbot
+
+Una vez que la base de datos ha sido creada, puedes iniciar el chatbot.
+
+1.  **Inicia el servidor de FastAPI:**
+    ```bash
+    uvicorn app.main:app --reload --host 0.0.0.0
+    ```
+
+2.  **Abre la interfaz de chat:**
+    Abre tu navegador y ve a `http://127.0.0.1:8000`. ¡Ya puedes chatear con tu bot!
+
+## 📁 Estructura del Proyecto
 ```text
-.
-├── app
-│   ├── api
-│   │   ├── routes
-│   │   └── schemas
-│   ├── core
-│   ├── services
-│   ├── utils
-│   └── main.py
-├── tests
-├── requirements.txt
-└── README.md
+UNIBOT-Chatbot/
+├── app/                  # Contiene la aplicación principal de FastAPI
+│   ├── static/           # Archivos de la interfaz web (HTML, CSS, JS)
+│   └── main.py           # Lógica de la API y del RAG en tiempo real
+│
+├── scripts/              # Scripts de un solo uso
+│   ├── scrape_unitecnar.py # El crawler que extrae el contenido de la web
+│   └── create_database.py  # Procesa el contenido y crea la base de datos
+│
+├── knowledge_base/       # Carpeta donde se guarda el texto extraído
+│
+├── db/                   # Carpeta donde ChromaDB almacena la base de datos vectorial
+│
+└── requirements.txt      # Lista de dependencias de Python
 ```
-
----
-
-## Guía de uso rápido
-1. Abrir **Twilio Console** y configurar la URL del webhook a:
-   ```
-   https://<dominio>/webhook/twilio
-   ```
-2. Enviar un mensaje de WhatsApp al número de prueba.  
-3. Observar la respuesta automática generada por **Llama 2**.  
-4. Para escalar la conversación a un humano, enviar la palabra clave:
-   ```
-   ASESOR
-   ```
-
----
-
-## Cumplimiento legal
-El tratamiento de datos personales se realiza conforme a la **Ley 1581 de 2012 (Colombia)** y su decreto reglamentario.  
-Se garantiza:
-- Autorización previa, expresa e informada del titular.  
-- Uso limitado al fin específico de prestación del servicio.  
-- Custodia y seguridad de la información mediante cifrado y control de acceso.
-
----
-
-## Contribuciones
-1. Crear *fork* y nueva rama: `git checkout -b feature/nueva_funcionalidad`.
-2. Seguir la guía de estilo `PEP 8` y emplear *snake_case* para todas las variables.
-3. Documentar las funciones y endpoints con docstrings y ejemplos.
-4. Abrir *pull request* detallando cambios y pruebas realizadas.
-
----
-
-## Licencia
-Distribuido bajo la licencia **MIT**. Revisa el archivo `LICENSE` para más detalles.
-
----
-
-## Contacto
-**Autor/a:** Ana  
-Correo: <tu_email_profesional@example.com>  
-LinkedIn: https://linkedin.com/in/tu_perfil
-
----
-
-> “La inteligencia artificial es la nueva electricidad.” – Andrew Ng
