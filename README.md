@@ -48,7 +48,7 @@ Asegúrate de tener instalado lo siguiente:
 
 1.  **Clona el repositorio:**
     ```bash
-    git clone <URL-de-tu-repositorio>
+    git clone https://github.com/F-Anks/UNIBOT-Chatbot.git
     cd UNIBOT-Chatbot
     ```
 
